@@ -13,7 +13,7 @@
 ```
 git clone "repository of this repo"
 ```
-- add an account.info file in the config folder, and its format will be like:
+- add an *account.info* file in the *config* folder, and its format will be like:
 ```
 {
 "username": "",
