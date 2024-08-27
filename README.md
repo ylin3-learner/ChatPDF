@@ -9,4 +9,30 @@
 - After getting the similarest docuements, use the result to call ChatGPT to get the most related result based on your query and uploaded PDF.
 
 ## Instructions
-
+- clone this project to your local repository
+```
+git clone "repository of this repo"
+```
+- add an account.info file in the config folder, and its format will be like:
+```
+{
+"username": "",
+"api_key": "",
+"loki_key": "",
+"copyttoaster_key": "",
+"OpenAI_API_key": ""
+}
+```
+- Go to the [LokiHub website](https://api.droidtown.co/) to get your username and api_key, which is the account you apply to.
+- #No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.#
+- Go to [ChatGPT website](https://platform.openai.com/docs/api-reference/introduction) to sign up or login to get your "OpenAI_API_key"'s value
+- The repository may rely on some libraries: pytesseract for OCR, OpenAI for ChatGPT, selenium for Web scaper
+```
+pip install pytesseract --user
+```
+```
+pip install openAI
+```
+```
+pip install selenium --user
+```
