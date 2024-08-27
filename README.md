@@ -36,5 +36,5 @@ pip install openAI --user
 ```
 pip install selenium --user
 ```
-
+- After you've done above, directly run discord_bot.py and the whole program will start running.
 ## Graph package
