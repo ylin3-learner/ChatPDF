@@ -24,7 +24,7 @@ git clone "repository of this repo"
 }
 ```
 - Go to the [LokiHub website](https://api.droidtown.co/) to get your username and api_key, which is the account you apply to.
-- #No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.#
+- **No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.**
 - Go to [ChatGPT website](https://platform.openai.com/docs/api-reference/introduction) to sign up or login to get your "OpenAI_API_key"'s value
 - The repository may rely on some libraries: pytesseract for OCR, OpenAI for ChatGPT, selenium for Web scaper
 ```
