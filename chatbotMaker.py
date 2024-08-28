@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import requests
+import aiohttp
 import logging
 from common import AccountManager
 
@@ -13,56 +13,59 @@ class ConversationManager:
         self.conversation_history = []
         self._account_manager = account_manager
         self.similarity_documents = None
+        self.extracted_text = None       
         self.query = None
 
-    def insert_data(self, similarity_documents=None):
+    def insert_data(self, similarity_documents=None, extracted_text=None):
         self.similarity_documents = similarity_documents
+        self.extracted_text = extracted_text
 
-    def generate_response(self, query):
-
-        user_input = f"{self.similarity_documents}\n + Q：{
-            query}? + “\nAccording to the provided data below, Please answer the question in traditional Chinese used in Taiwan."
-
+    async def generate_response(self, query):
+        if self.similarity_documents:
+            user_input = f"{self.similarity_documents}\n + Q：{
+                query}? + \nAccording to the provided data below, please answer the question in traditional Chinese used in Taiwan."
+        else:
+            # Use extracted_text if similarity_documents is not available
+            user_input = f"{self.extracted_text}\n + Q：{query}? + \nAccording to the provided data below, please answer the question in traditional Chinese used in Taiwan."        
         # Update the conversation history with user input
         self.conversation_history.append(
             {"role": "user", "content": user_input})
-
-        # Prepare payload with conversation history, similarity_documents, and query
+    
+        # Prepare payload with conversation history and query
         payload = {
             "model": "gpt-4o",
             "messages": self.conversation_history
         }
-
+    
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self._account_manager.openAI_api_key}"
         }
-
-        # Make the API request to OpenAI
-        response = requests.post(API_URL, headers=headers, json=payload)
-
-        if response.status_code == 200:
-            data = response.json()
-            bot_response = data["choices"][0]["message"]["content"]
-
-            # Append the assistant's response to the conversation history
-            self.conversation_history.append(
-                {"role": "assistant", "content": bot_response})
-
-            # Extract token usage information
-            total_tokens = data["usage"]["total_tokens"]
-            completion_tokens = data["usage"]["completion_tokens"]
-
-            # Check token usage and warn the user if necessary
-            if total_tokens <= completion_tokens:
-                print("Warning: Your total tokens are equal to or less than the completion tokens. You might not have enough tokens for the next request.")
-
-            return bot_response
-
-        else:
-            logging.error(f"API request failed with status code {
-                          response.status_code}: {response.text}")
-            return "Sorry, I couldn't process that request."
+    
+        # Make the API request to OpenAI using aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.post(API_URL, headers=headers, json=payload) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    bot_response = data["choices"][0]["message"]["content"]
+    
+                    # Append the assistant's response to the conversation history
+                    self.conversation_history.append(
+                        {"role": "assistant", "content": bot_response})
+    
+                    # Extract token usage information
+                    total_tokens = data["usage"]["total_tokens"]
+                    completion_tokens = data["usage"]["completion_tokens"]
+    
+                    # Check token usage and warn the user if necessary
+                    if total_tokens <= completion_tokens:
+                        print("Warning: Your total tokens are equal to or less than the completion tokens. You might not have enough tokens for the next request.")
+    
+                    return bot_response
+    
+                else:
+                    logging.error(f"API request failed with status code {response.status}: {await response.text()}")
+                    return "Sorry, I couldn't process that request."
 
     def get_conversation_history(self):
         return self.conversation_history

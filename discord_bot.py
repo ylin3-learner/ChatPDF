@@ -7,7 +7,7 @@
 1. 接收用戶上傳的PDF文件。
 2. 調用pdf_handler.py進行PDF文本轉換。
 3. 調用classification_manager.py和clustering_manager.py進行文本分類和分群。
-4. 處理用戶問題，調用question_answering_manager.py生成答案。
+4. 處理用戶問題，調用chatbotMaker.py生成答案。
 將結果返回給用戶。
 """
 
@@ -59,6 +59,10 @@ class BotClient(discord.Client):
 
         # Initialize copyToasterManager instance
         self.copyToater_manager = CopyToasterManager(self.account_manager)
+        
+        # PDFHandler will be initialized dynamically
+        self.pdf_handler = None
+        self.current_pdf_path = None        
 
     async def on_ready(self):
         print('Logged on as {} with id {}'.format(self.user, self.user.id))
@@ -86,74 +90,71 @@ class BotClient(discord.Client):
             self.message_mod_times[message.id] = message.created_at.timestamp()
             self.message_contents[message.id] = message.content        
 
+        # Process the message
+        await self.process_message(message)
+
+    async def process_message(self, message):
         # Check if the message contains any attachments
         if message.attachments:
             for attachment in message.attachments:
-                # Check if the attachment is a PDF file
                 if attachment.filename.endswith('.pdf'):
-                    # Save the PDF file to a temporary location
                     save_path = os.path.join(data_dir, attachment.filename)
                     await attachment.save(save_path)
-                    
-                    # Get the current modified time
+    
                     current_mod_time = os.path.getmtime(save_path)
-                            
                     await message.reply(f'Received PDF: {attachment.filename}')
+    
                     if (attachment.filename not in self.file_mod_times or
                             self.file_mod_times[attachment.filename] != current_mod_time):
-
-                        # Update the file's modified time
+    
                         self.file_mod_times[attachment.filename] = current_mod_time
-                        # Process the PDF file using pdf_handler
-                        pdf_handler = PDFHandler(save_path)
-                        extracted_text = pdf_handler.extract_text()
+                        self.current_pdf_path = save_path
+                        self.pdf_handler = PDFHandler(save_path)
+    
+                        extracted_text = self.pdf_handler.extract_text()
                         print(f"\nextracted_text: {extracted_text}")
-
-                        # Optionally, reply to the user with a confirmation or some text
+    
                         await message.reply(f'Text extracted from {attachment.filename}.')
-
-                        await self.neurokumoko_manager.create_project(
-                            "PDF_classfication")
-                        print(f"neurokumoko_manager.loki_key: {
-                                                          self.neurokumoko_manager.loki_key}")                        
-        
-                        flag = await self.neurokumoko_manager.poll_model_status("PDF_classfication")
-                        if flag:
-                            print(f"neurokumoko_manager.loki_key: {
-                                  self.neurokumoko_manager.loki_key}")
-                            res = await self.neurokumoko_manager.get_loki_text_sim(extracted_text, loki_key=self.neurokumoko_manager.loki_key)
-                            print(res)
-                            if res:
-                                # print(f'Extracted Text from {attachment.filename}:')
-                                lexicon_values = self.neurokumoko_manager.extract_lexicon_values(
-                                    res)
-                                if lexicon_values:
-                                    await message.reply(f"Your PDF seem to belong to {lexicon_values}!")
     
-                                    # Call CopyToaster to get clustering_result
-                                    response_data = self.copyToater_manager.getCopyToasterResult(
-                                        lexicon_values, extracted_text, 1)
-                                    print(f"\nresponse_data: {response_data}")
-                                    similarity_documents = self.copyToater_manager.extract_category_documents(response_data)
-                                    print(f"\nsimilarity_documents: {similarity_documents}")
-                                    
-                                    # Call ConversationManager and set similarity_documents
-                                    self.conversation_manager.insert_data(
-                                        similarity_documents=similarity_documents)
+                        try:
+                            await self.neurokumoko_manager.create_project("PDF_classfication")
+                            flag = await self.neurokumoko_manager.poll_model_status("PDF_classfication")
+                            if flag:
+                                res = await self.neurokumoko_manager.get_loki_text_sim(extracted_text, loki_key=self.neurokumoko_manager.loki_key)
+                                print(res)
+                                if res:
+                                    lexicon_values = self.neurokumoko_manager.extract_lexicon_values(
+                                        res)
+                                    if lexicon_values:
+                                        await message.reply(f"Your PDF seems to belong to {lexicon_values}!")
     
-                                    # Retrieve and update message content dynamically
-                                    message_content = self.get_message_content(
-                                        message)
-                                    response = self.conversation_manager.generate_response(
-                                        message_content)
-                                    await message.reply(response)
-                                    
-                                else:
-                                    await message.reply(f"Oops! There is no matched category for the current bot!\n Wait for bot to handle...")
-                        else:
-                            await message.reply(
-                                "Model is building... Please try again in an hour.")
-                            sys.exit(0)
+                                        response_data = self.copyToater_manager.getCopyToasterResult(
+                                            lexicon_values, extracted_text, 1)
+                                        print(f"\nresponse_data: {
+                                              response_data}")
+                                        similarity_documents = self.copyToater_manager.extract_category_documents(
+                                            response_data)
+                                        print(f"\nsimilarity_documents: {
+                                              similarity_documents}")
+    
+                                        self.conversation_manager.insert_data(
+                                            similarity_documents=similarity_documents, extracted_text=extracted_text)
+    
+                                        message_content = self.get_message_content(
+                                            message)
+                                        response = await self.conversation_manager.generate_response(message_content)
+                                        await message.reply(response)
+                                    else:
+                                        await message.reply(f"Oops! There is no matched category for the current bot!\n Wait for bot to handle...")
+                            else:
+                                await message.reply("Model is building... Please try again in an hour.")
+                                sys.exit(0)
+                        except Exception as e:
+                            await message.reply(f"An error occurred: {str(e)}")
+        else:
+            message_content = self.get_message_content(message)
+            response = await self.conversation_manager.generate_response(message_content)
+            await message.reply(response)
 
     def get_extracted_text(self, filename):
         return self.extracted_texts.get(filename, None)
@@ -166,10 +167,10 @@ if __name__ == "__main__":
     try:
         with open("config/account.info", encoding="utf-8") as f:  # Read account.info
             accountDICT = json.loads(f.read())
-    
+
         intents = discord.Intents.default()
         intents.message_content = True  # Ensure the bot can read message content
-    
+
         client = BotClient(intents=intents)
         client.run(accountDICT["discord_token"])
     except discord.errors.PrivilegedIntentsRequired as e:
