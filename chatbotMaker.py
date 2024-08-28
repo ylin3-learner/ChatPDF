@@ -15,13 +15,13 @@ class ConversationManager:
         self.similarity_documents = None
         self.query = None
 
-    def insert_data(self, similarity_documents):
+    def insert_data(self, similarity_documents=None):
         self.similarity_documents = similarity_documents
 
     def generate_response(self, query):
 
         user_input = f"{self.similarity_documents}\n + Q：{
-            query}? + “\nAccording to the provided data below, Please answer the question in Mandarin Chinese used in Taiwan."
+            query}? + “\nAccording to the provided data below, Please answer the question in traditional Chinese used in Taiwan."
 
         # Update the conversation history with user input
         self.conversation_history.append(

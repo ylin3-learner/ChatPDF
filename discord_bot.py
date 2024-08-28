@@ -107,45 +107,49 @@ class BotClient(discord.Client):
                         # Process the PDF file using pdf_handler
                         pdf_handler = PDFHandler(save_path)
                         extracted_text = pdf_handler.extract_text()
+                        print(f"\nextracted_text: {extracted_text}")
 
                         # Optionally, reply to the user with a confirmation or some text
                         await message.reply(f'Text extracted from {attachment.filename}.')
 
                         await self.neurokumoko_manager.create_project(
                             "PDF_classfication")
+                        print(f"neurokumoko_manager.loki_key: {
+                                                          self.neurokumoko_manager.loki_key}")                        
+        
                         flag = await self.neurokumoko_manager.poll_model_status("PDF_classfication")
                         if flag:
                             print(f"neurokumoko_manager.loki_key: {
                                   self.neurokumoko_manager.loki_key}")
-                            res = await self.neurokumoko_manager.get_loki_text_sim(
-                                extracted_text, loki_key=self.neurokumoko_manager.loki_key)
+                            res = await self.neurokumoko_manager.get_loki_text_sim(extracted_text, loki_key=self.neurokumoko_manager.loki_key)
                             print(res)
-                            
-                            # print(f'Extracted Text from {attachment.filename}:')
-                            lexicon_values = await self.neuroKumoko_manager.extract_lexicon_values(res)
-                            if lexicon_values:
-                                await message.reply(f"Your PDF seem to belong to {sim}!")
-
-                                # Call CopyToaster to get clustering_result
-                                response_data = self.copyToater_manager.getCopyToasterResult(
-                                    lexicon_values, extracted_text)
-                                similarity_documents = self.copyToater_manager.extract_category_documents(
-                                    response_data)
-                                print(similarity_documents)
-                                
-                                # Call ConversationManager and set similarity_documents
-                                self.conversation_manager.insert_data(
-                                    similarity_documents=similarity_documents)
-
-                                # Retrieve and update message content dynamically
-                                message_content = self.get_message_content(
-                                    message)
-                                response = self.conversation_manager.generate_response(
-                                    message_content)
-                                await message.reply(response)
-                                
-                            else:
-                                await message.reply(f"Oops! There is no matched category for the current bot!\n Wait for bot to handle...")
+                            if res:
+                                # print(f'Extracted Text from {attachment.filename}:')
+                                lexicon_values = self.neurokumoko_manager.extract_lexicon_values(
+                                    res)
+                                if lexicon_values:
+                                    await message.reply(f"Your PDF seem to belong to {lexicon_values}!")
+    
+                                    # Call CopyToaster to get clustering_result
+                                    response_data = self.copyToater_manager.getCopyToasterResult(
+                                        lexicon_values, extracted_text, 1)
+                                    print(f"\nresponse_data: {response_data}")
+                                    similarity_documents = self.copyToater_manager.extract_category_documents(response_data)
+                                    print(f"\nsimilarity_documents: {similarity_documents}")
+                                    
+                                    # Call ConversationManager and set similarity_documents
+                                    self.conversation_manager.insert_data(
+                                        similarity_documents=similarity_documents)
+    
+                                    # Retrieve and update message content dynamically
+                                    message_content = self.get_message_content(
+                                        message)
+                                    response = self.conversation_manager.generate_response(
+                                        message_content)
+                                    await message.reply(response)
+                                    
+                                else:
+                                    await message.reply(f"Oops! There is no matched category for the current bot!\n Wait for bot to handle...")
                         else:
                             await message.reply(
                                 "Model is building... Please try again in an hour.")
