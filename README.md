@@ -21,11 +21,11 @@
 ```
 cd path/to/your/folder
 ```
-3. Run the git clone Command: Use the git clone command followed by the URL of the repository you want to clone. For example:
+3. Run the git clone Command here: Use the git clone command followed by the URL of the repository you want to clone. 
 ```
-git clone https://github.com/username/repository-name.git
+git clone https://github.com/ylin3-learner/ChatPDF.git
 ```
-*Replace https://github.com/username/repository-name.git with the actual URL of the repository.*
+
 ### add an *account.info* file in the *config* folder, and its format will be like:
 ```
 {
@@ -46,9 +46,9 @@ git clone https://github.com/username/repository-name.git
 
 **No need to fill in "loki_key"'s value and "copytoaster_key"'s value, which will be automatically generated.**
 
-##### The repository may rely on some libraries, run
+## The repository may rely on some libraries, run
 ```
 pip install -r requirements.txt
 ```
 
-##### After you've done above, run *discord_bot.py* and the whole program will start running.
+## After you've done above, run *discord_bot.py* and the whole program will start running.
