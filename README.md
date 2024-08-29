@@ -52,3 +52,34 @@ pip install -r requirements.txt
 ```
 
 ## 4. After you've done above, run *discord_bot.py* and the whole program will start running.
+
+## Directory
+.
+├── .gitignore                   # Git 忽略文件設定
+├── discord_bot.py               # Discord Bot 主程式文件
+├── LICENSE                      # 授權文件
+├── README.md                    # 專案說明文件
+├── requirements.txt             # Python 相依套件列表
+├── config/                      # 配置文件目錄
+│   ├── account.info             # 帳戶相關信息
+│   └── crawled_links.json       # 已爬取連結記錄
+├── data/                        # 數據目錄
+│   ├── house.json               # 房地產數據
+│   └── international_media.json # 國際媒體數據
+├── NLU/                         # 自然語言理解模塊目錄
+│   ├── chatbotMaker.py          # 聊天機器人生成器
+│   ├── classification_manager.py# 分類管理器
+│   ├── clustering_manager.py    # 聚類管理器
+│   ├── common.py                # 通用功能
+│   ├── copyToaster_manager.py   # 文案管理器
+│   └── __init__.py              # 包初始化文件
+├── PDF/                         # PDF 相關處理模塊目錄
+│   ├── pdf_handler.py           # PDF 處理器
+│   └── __init__.py              # 包初始化文件
+└── Scraper/                     # 網頁爬蟲模塊目錄
+    ├── clicker.py               # 點擊模塊
+    ├── parser.py                # 解析模塊
+    ├── recorder.py              # 紀錄器模塊
+    ├── scraper_main.py          # 爬蟲主程式
+    └── __init__.py              # 包初始化文件
+
