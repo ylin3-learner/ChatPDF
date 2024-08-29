@@ -10,10 +10,23 @@
 
 ## Instructions
 - clone this project to your local repository
+### Prerequisites
+- Ensure that [Git](https://git-scm.com/downloads) is installed on your local computer.
+- You should have access to the repository you want to clone (either public or private with appropriate credentials).
+### Cloning a Repository
+1. Open Terminal or Command Prompt:
+- On Windows: You can use Git Bash, Command Prompt, or any terminal emulator like PowerShell.
+- On Mac/Linux: Open the Terminal application.
+2. Navigate to the Directory Where You Want to Clone the Repository: Use the cd command to move to your desired directory. For example:
 ```
-git clone "repository of this repo"
+cd path/to/your/folder
 ```
-- add an *account.info* file in the *config* folder, and its format will be like:
+3. Run the git clone Command: Use the git clone command followed by the URL of the repository you want to clone. For example:
+```
+git clone https://github.com/username/repository-name.git
+```
+*Replace https://github.com/username/repository-name.git with the actual URL of the repository.*
+### add an *account.info* file in the *config* folder, and its format will be like:
 ```
 {
 "username": "",
