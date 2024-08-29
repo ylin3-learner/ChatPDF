@@ -31,11 +31,11 @@ git clone "repository of this repo"
 ##### For "OpenAI_API_key":
 - Go to [ChatGPT website](https://platform.openai.com/docs/api-reference/introduction) to sign up or login to get your "OpenAI_API_key"'s value
 
-- **No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.**
+**No need to fill in "loki_key"'s value and "copytoaster_key"'s value, which will be automatically generated.**
 
-- The repository may rely on some libraries, run
+##### The repository may rely on some libraries, run
 ```
 pip install -r requirements.txt
 ```
 
-- After you've done above, run *discord_bot.py* and the whole program will start running.
+##### After you've done above, run *discord_bot.py* and the whole program will start running.
