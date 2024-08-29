@@ -23,18 +23,19 @@ git clone "repository of this repo"
 "OpenAI_API_key": ""
 }
 ```
-- Go to the [LokiHub website](https://api.droidtown.co/) to get your username and api_key, which is the account you apply to.
-- **No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.**
+**User should fill in values for "username", "api_key", "OpenAI_API_key".**
+
+##### For "username" and "api_key":
+- Go to the [LokiHub website](https://api.droidtown.co/login/) and click on *"註冊"* or *"Register"* to get your *username* and *api_key*, which is the account you apply to.
+
+##### For "OpenAI_API_key":
 - Go to [ChatGPT website](https://platform.openai.com/docs/api-reference/introduction) to sign up or login to get your "OpenAI_API_key"'s value
-- The repository may rely on some libraries: **pytesseract for OCR, OpenAI for ChatGPT, selenium for Web scraper**
+
+- **No need to fill in "loki_key"'s value and "copytoaster_key"'s value. Just leave it there as shown above.**
+
+- The repository may rely on some libraries, run
 ```
-pip install pytesseract --user
+pip install -r requirements.txt
 ```
-```
-pip install openAI --user
-```
-```
-pip install selenium --user
-```
-- After you've done above, directly run discord_bot.py and the whole program will start running.
-## Graph package
+
+- After you've done above, run *discord_bot.py* and the whole program will start running.
