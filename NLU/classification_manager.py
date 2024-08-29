@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-from common import AccountManager, CrawledDataManager
+from .common import AccountManager, CrawledDataManager
 from pprint import pprint
 import aiohttp
 import json
@@ -193,16 +193,17 @@ async def main():
     print(f"neurokumoko_manager.loki_key: {neurokumoko_manager.loki_key}")
     
     extracted_text = "2024 年巴黎奧運揭幕花都聚集了來自全球各地的運動員和爭睹頂級賽事的觀眾然而這卻讓部分巴黎居民心生怨懟近幾個月來社群媒體可見到部分巴黎民眾對法國首都的狀態抱怨連連有些居民形容巴黎正成為人間地獄警告遊客千萬別來相較於巴黎市政府堅稱奧運取得巨大成功為何巴黎人反而成群結隊地想逃離這座城市"
-    #res = await neurokumoko_manager.get_loki_text_sim(
-        #extracted_text, loki_key=neurokumoko_manager.loki_key)
+    res = await neurokumoko_manager.get_loki_text_sim(
+        extracted_text, loki_key=neurokumoko_manager.loki_key)
     flag = await neurokumoko_manager.poll_model_status("PDF_classfication")
     if flag:
-        print(f"neurokumoko_manager.loki_key: {neurokumoko_manager.loki_key}")
+        print(f"neurokumoko_manager.loki_key: {
+              neurokumoko_manager.loki_key}")
         res = await neurokumoko_manager.get_loki_text_sim(extracted_text, loki_key=neurokumoko_manager.loki_key)
         print(res)
     print(res)
     if res:
-        # print(f'Extracted Text from {attachment.filename}:')
+        print(f'Extracted Text from {attachment.filename}:')
         lexicon_values = neurokumoko_manager.extract_lexicon_values(res)
         print(lexicon_values)
 

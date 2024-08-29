@@ -3,7 +3,7 @@
 
 import aiohttp
 import logging
-from common import AccountManager
+from .common import AccountManager
 
 # API_KEY = "your_openai_api_key"  # Replace with your actual API key
 API_URL = "https://api.openai.com/v1/chat/completions"  # OpenAI API endpoint

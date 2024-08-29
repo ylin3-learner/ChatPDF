@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-from common import AccountManager, CrawledDataManager
+from .common import AccountManager, CrawledDataManager
 from requests import post
 from pprint import pprint
 import requests

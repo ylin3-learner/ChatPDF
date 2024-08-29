@@ -15,12 +15,12 @@ import logging
 import discord
 import json
 import os
-from pdf_handler import PDFHandler  # Import your PDFHandler class
-from main import main
-from classification_manager import NeuroKumokoManager
-from copyToaster_manager import CopyToasterManager
-from common import AccountManager
-from chatbotMaker import ConversationManager
+from PDF.pdf_handler import PDFHandler  # Import your PDFHandler class
+from Scraper.scraper_main import run_scraper
+from NLU.classification_manager import NeuroKumokoManager
+from NLU.copyToaster_manager import CopyToasterManager
+from NLU.common import AccountManager
+from NLU.chatbotMaker import ConversationManager
 import multiprocessing
 import sys
 import asyncio
@@ -47,7 +47,7 @@ class BotClient(discord.Client):
         self.neurokumoko_manager = NeuroKumokoManager(self.account_manager)
         self.conversation_manager = ConversationManager(self.account_manager)
      
-        # Call main() when BotClient is initialized
+        # Call run_scraper() when BotClient is initialized
         target_urls = [
             "https://house.udn.com/house/index",
             "https://udn.com/news/cate/2/7225"
@@ -55,7 +55,7 @@ class BotClient(discord.Client):
         filenames = ["house", "international_media"]
         
         for target_url, filename in zip(target_urls, filenames):
-            main(target_url, filename, limit=1)
+            run_scraper(target_url, filename, limit=1)
 
         # Initialize copyToasterManager instance
         self.copyToater_manager = CopyToasterManager(self.account_manager)
