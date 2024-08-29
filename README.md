@@ -54,6 +54,7 @@ pip install -r requirements.txt
 ## 4. After you've done above, run *discord_bot.py* and the whole program will start running.
 
 ## Directory
+```
 .
 ├── .gitignore                   # Git 忽略文件設定
 ├── discord_bot.py               # Discord Bot 主程式文件
@@ -82,4 +83,4 @@ pip install -r requirements.txt
     ├── recorder.py              # 紀錄器模塊
     ├── scraper_main.py          # 爬蟲主程式
     └── __init__.py              # 包初始化文件
-
+```
