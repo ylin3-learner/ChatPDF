@@ -58,7 +58,10 @@ class PDFHandler:
                 futures.append(executor.submit(self.process_pages_with_ocr, start_page, end_page))
 
             for future in as_completed(futures):
-                all_text_pages.update(future.result())
+                try:
+                    all_text_pages.update(future.result())
+                except Exception as e:
+                    print(f"Error in OCR processing: {e}")                
 
         return all_text_pages
 

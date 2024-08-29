@@ -13,6 +13,7 @@
 
 import logging
 import discord
+import concurrent.futures
 import json
 import os
 from PDF.pdf_handler import PDFHandler  # Import your PDFHandler class
@@ -111,10 +112,12 @@ class BotClient(discord.Client):
                         self.current_pdf_path = save_path
                         self.pdf_handler = PDFHandler(save_path)
     
-                        extracted_text = self.pdf_handler.extract_text()
-                        print(f"\nextracted_text: {extracted_text}")
-    
-                        await message.reply(f'Text extracted from {attachment.filename}.')
+                        extracted_text = extracted_text = await self.extract_text_async(self.pdf_handler)
+                        if extracted_text:
+                            print(f"\nextracted_text: {extracted_text}")
+                            await message.reply(f'Text extracted from {attachment.filename}.')
+                        else:
+                                await message.reply(f'Failed to extract text from {attachment.filename} due to timeout.')                        
     
                         try:
                             await self.neurokumoko_manager.create_project("PDF_classfication")
@@ -136,16 +139,19 @@ class BotClient(discord.Client):
                                             response_data)
                                         print(f"\nsimilarity_documents: {
                                               similarity_documents}")
-    
-                                        self.conversation_manager.insert_data(
-                                            similarity_documents=similarity_documents, extracted_text=extracted_text)
-    
-                                        message_content = self.get_message_content(
-                                            message)
-                                        response = await self.conversation_manager.generate_response(message_content)
-                                        await message.reply(response)
                                     else:
                                         await message.reply(f"Oops! There is no matched category for the current bot!\n Wait for bot to handle...")
+                                        # If no lexicon_values, set similarity_documents as None
+                                        similarity_documents = None
+                                    
+                                    # No matter similarity_documents exists, pass similarity_documents, and extracted_text to conversation_manager anyway.
+                                    self.conversation_manager.insert_data(
+                                            similarity_documents=similarity_documents, extracted_text=extracted_text)
+    
+                                    message_content = self.get_message_content(
+                                        message)
+                                    response = await self.conversation_manager.generate_response(message_content)
+                                    await message.reply(response)                                    
                             else:
                                 await message.reply("Model is building... Please try again in an hour.")
                                 sys.exit(0)
@@ -155,7 +161,18 @@ class BotClient(discord.Client):
             message_content = self.get_message_content(message)
             response = await self.conversation_manager.generate_response(message_content)
             await message.reply(response)
-
+    
+    async def extract_text_async(self, pdf_handler, timeout=60):
+        loop = asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            try:
+                # Use thread_pool to manage OCR function and set timeout
+                extracted_text = await loop.run_in_executor(executor, pdf_handler.extract_text)
+                return extracted_text
+            except concurrent.futures.TimeoutError:
+                logging.error("OCR task timed out.")
+                return None    
+            
     def get_extracted_text(self, filename):
         return self.extracted_texts.get(filename, None)
 
