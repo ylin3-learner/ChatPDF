@@ -1,4 +1,4 @@
-# ChatPDF
+# Docky-Talky
 ## Overview
 ##### This repository is an application similar to ChatPDF; however, implement it in a different way based on [LokiHub](https://github.com/Droidtown/LokiHub)
 ##### It addresses to tackle hallucination of ChatPDF when directly calling ChatGPT API.
