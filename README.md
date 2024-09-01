@@ -29,6 +29,7 @@
 ### 2. Add an *account.info* file in the *config* folder, and its format will be like:
   ```
   {
+  "discord_token": "",
   "username": "",
   "api_key": "",
   "loki_key": "",
@@ -36,8 +37,24 @@
   "OpenAI_API_key": ""
   }
   ```
-  **User should fill in values for "username", "api_key", "OpenAI_API_key".**
-  
+  **User should fill in values for "username", "api_key", "OpenAI_API_key", "discord_token"**
+  ##### For "discord_token":
+  - 1. *Create a Discord Account*: If you haven't already, create an account on Discord.
+    2. *Go to the Discord Developer Portal*: Visit the Discord Developer Portal.
+    3. *Create a New Application:*
+       - Click on the "New Application" button.
+       - Enter a name for your application (this can be anything you like).
+       - Click "Create".
+    4. *Create a Bot:*
+       - After creating the bot, you will see a "Token" section on the Bot page.
+       - Click "Copy" under the "Token" section to copy your bot's token to your clipboard.
+       - Note: Keep this token secret! It is essentially the password for your bot and allows it to authenticate with Discord.
+    5. *Enable Privileged Gateway Intents (if needed):*
+       - If your bot requires access to certain events, such as member updates or presence updates, scroll down to the "Privileged Gateway Intents" section and toggle the "Presence Intent" and "Server Members Intent" options as needed.
+    6. *Invite Your Bot to a Server:*
+       - Go to the "OAuth2" tab on the left.
+       - Under "OAuth2 URL Generator," select the "bot" scope and assign the permissions your bot needs.
+       - Copy the generated URL and paste it into your browser. Then, select a server to add your bot to.
   ##### For "username" and "api_key":
   - Go to the [LokiHub website](https://api.droidtown.co/login/) and click on *"註冊"* or *"Register"* to get your *username* and *api_key*, which is the account you apply to.
   
